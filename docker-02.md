@@ -357,10 +357,43 @@ Escribir un documento markdown con los comandos realizados para resolver los sig
 ### Parte 1
 
 1. Crear volumen compartido `volumenDocker`
+
+Creamos el volumen que puede ser usado por uno  varios contenedores usando el siguiente comando:
+
+```
+docker volume create volumenDocker
+```
+
 2. Crear un contenedor de Nginx que use el volumen `volumenDocker`.
+```
+docker run -d -p 80:80 --name nginx-container -v volumenDocker: /usr/share/nginx/html nginx
+```
+
 3. Modifique el contenido del fichero `index.html` incluyendo un saludo personal en lugar del texto por defecto.
+
+Desde el dockerfile programo el fichero index.html para modificar el saludo. Lo construimos y ejecutamos y comprobamos que funciona.
+```
+//Contenido del Dockerfile
+FROM nginx:latest
+
+RUN echo '<!DOCTYPE html> <html> <head> <meta charset="UTF-8"> <title>Miriam Armario</title> <style> body {background-color: black;} </style> </head> <body> <h1 style="color: white; text-align: center;">Miriam Armario IISS 2023</h1> <img src="https://cdn.pixabay.com/photo/2015/02/24/15/41/wolf-647528_640.jpg" alt="Impulsada por el viento del atardecer"> </body> </html>' > /usr/share/nginx/html/index.html
+
+EXPOSE 80
+
+//Comandos de la terminal
+docker build -t nginx1 .
+docker run -d 80:80 nginx1
+
+```
+
+
 4. Cree un segundo contenedor que también use el volumen `volumenDocker`.
+```
+docker run -d -p 81:80 --name nginx-container2 -v volumenDocker: /usr/share/nginx/html nginx
+```
 5. Compruebe que puede acceder a `localhost:80` (primer contenedor) y `localhost:81` (segundo contenedor) y ver el contenido de `index.html`.
+
+Las imágenes de comprobación están subidas aparte, con nombre `Docker2-80` (imagen que comprueba el acceso a `localhost:80`) y `Docker2-81` (imagen que comprueba el acceso a `localhost:81`).
 
 ---
 
