@@ -400,12 +400,47 @@ Las imágenes de comprobación están subidas aparte, con nombre `Docker2-80` (i
 ### Parte 2
 
 1. Crear una nueva red `redDocker`.
+
+Usamos el siguiente comando: 
+```
+docker network create redDocker
+
+```
 2. Crear un contenedor de Ubuntu `Ubuntu1`.
+```
+docker run -d --name Ubuntu1 --network redDocker ubuntu
+```
+ El parámetro --network redDocker conecta el contenedor a la red redDocker y ubuntu indica que se utilizará la imagen de Ubuntu como base para el contenedor.
+
 3. Crear un contenedor de Ubuntu `Ubuntu2`.
+```
+docker run -d --name Ubuntu2 ubuntu
+```
 4. Conectar `Ubuntu1` a la red `redDocker`.
+
+En el paso 2 ya hemos conectado el contenedor `Ubuntu1` a la red `redDocker`.
+
 5. Intentar hacer ping a `Ubuntu1` desde `Ubuntu2`. ¿Funciona? ¿Por qué?.
+
+Para hacer ping primero tenemos que conocer la ip de `Ubuntu1` y de `Ubuntu2`. Para ello usamos el siguiente comando:
+```
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' Ubuntu1
+
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' Ubuntu2
+```
+
+No funciona ya que `Ubuntu2` no está conectado a la red `redDocker`.
+
 6. Conectar `Ubuntu2` a la red `redDocker`.
+
+Conectamos `Ubuntu2` a la red usando el siguiente comando:
+```
+docker network connect redDocker Ubuntu2
+```
+
 7. Intentar de nuevo hacer ping a `Ubuntu1` desde `Ubuntu2`. ¿Funciona? ¿Por qué?.
+
+Si funciona porque ya ambos contenedores están conectados a la red `redDocker`.
 
 ---
 
