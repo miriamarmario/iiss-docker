@@ -394,6 +394,10 @@ docker run -d -p 81:80 --name nginx-container2 -v volumenDocker: /usr/share/ngin
 
 Las imágenes de comprobación están subidas aparte, con nombre `Docker2-80` (imagen que comprueba el acceso a `localhost:80`) y `Docker2-81` (imagen que comprueba el acceso a `localhost:81`).
 
+![imagen](.\Docker2-80.png)
+
+![imagen](.\Docker2-81.png)
+
 ---
 
 ### Parte 2
