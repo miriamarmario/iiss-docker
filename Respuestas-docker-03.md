@@ -519,18 +519,140 @@ Subir el fichero `docker-compose.yml` creado y todo lo necesario, y además, un 
 ### Parte 1
 
 1) Crear un fichero `docker-compose.yml` con dos servicios: drupal + mysql.
+
+El contenido del fichero `docker-compose.yml` será este:
+```
+version: '3.9'
+
+services:
+  db:
+    image: mysql:latest
+    volumes:
+      - volumenDocker:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+
+  drupal:
+    image: drupal:latest
+    ports:
+      - "81:80"
+    volumes:
+      - volumenDocker:/var/www/html
+    depends_on:
+      - db
+
+volumes:
+  volumenDocker:
+```
+
 2) Hacer que el servicio drupal utilice el puerto 81.
+Ya está especificado arriba. 
+```
+ports:
+  - "81:80"
+```
 3) Hacer que ambos contenedores usen un volumen `volumenDocker`.
+Ya hemmos hecho que ambos contenedores usen el volumen `volumenDocker`.
+```
+volumes:
+  volumenDocker:
+
+```
 4) Comprobar que puede acceder a `localhost:81` y puede visualizar la página de configuración de drupal.
+
+Antes de comprobarlo, tenemos que poner este comando en la terminal para poner los contenedores en ejecución:
+```
+docker-compose up -d
+```
+
+Comprobamos que funciona:
+
+![imagen](.\Docker-03-Drupal.png)
+
+Para parar los contenedores, usamos el siguiente comando:
+```
+docker-compose down
+```
+
 
 ---
 
 ### Parte 2
 
 1) Crear un fichero `docker-compose.yml` con dos servicios: wordpress +  mariadb.
+
+El contenido del fichero `docker-compose.yml` será este:
+
+```
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - redDocker
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress
+    restart: always
+    ports:
+      - "82:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      - redDocker
+    volumes:
+      - wp_data:/var/www/html
+
+networks:
+  redDocker:
+
+volumes:
+  db_data:
+  wp_data:
+```
+
 2) Hacer que el servicio wordpress utilice el puerto 82.
+
+Ya lo hemos especificado en el apartado anterior:
+
+```
+   ports:
+      - "82:80"
+```
 3) Hacer que ambos contenedores usen la red `redDocker`.
+
+Ya se especifica en el apartado 1:
+```
+networks:
+  redDocker:
+```
 4) Comprobar que puede acceder a `localhost:82` y puede visualizar la página de configuración de wordpress.
+Antes de comprobarlo, tenemos que poner este comando en la terminal para poner los contenedores en ejecución:
+```
+docker-compose up -d
+```
+Comprobamos que funciona:
+![imagen](.\Docker-03-Wordpress.png)
+
+Paramos los contenedores con el siguiente comando:
+```
+docker-compose down
+```
+
 
 ---
 
