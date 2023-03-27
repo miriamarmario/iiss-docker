@@ -365,9 +365,9 @@ docker volume create volumenDocker
 ```
 
 2. Crear un contenedor de Nginx que use el volumen `volumenDocker`.
-```
-docker run -d -p 80:80 --name nginx-container -v volumenDocker: /usr/share/nginx/html nginx
-```
+
+Lo haré en el siguiente paso.
+
 
 3. Modifique el contenido del fichero `index.html` incluyendo un saludo personal en lugar del texto por defecto.
 
@@ -381,9 +381,8 @@ RUN echo '<!DOCTYPE html> <html> <head> <meta charset="UTF-8"> <title>Miriam Arm
 EXPOSE 80
 
 //Comandos de la terminal
-docker build -t nginx1 .
-docker run -d 80:80 nginx1
-
+docker build -t nginx-container1 .
+docker run -d -p 80:80 --name nginx-container1 -v volumenDocker: /usr/share/nginx/html nginx
 ```
 
 
@@ -404,13 +403,12 @@ Las imágenes de comprobación están subidas aparte, con nombre `Docker2-80` (i
 Usamos el siguiente comando: 
 ```
 docker network create redDocker
-
 ```
 2. Crear un contenedor de Ubuntu `Ubuntu1`.
 ```
-docker run -d --name Ubuntu1 --network redDocker ubuntu
+docker run -it --name Ubuntu1 ubuntu
 ```
- El parámetro --network redDocker conecta el contenedor a la red redDocker y ubuntu indica que se utilizará la imagen de Ubuntu como base para el contenedor.
+
 
 3. Crear un contenedor de Ubuntu `Ubuntu2`.
 ```
@@ -418,7 +416,9 @@ docker run -d --name Ubuntu2 ubuntu
 ```
 4. Conectar `Ubuntu1` a la red `redDocker`.
 
-En el paso 2 ya hemos conectado el contenedor `Ubuntu1` a la red `redDocker`.
+```
+docker network connect redDocker Ubuntu1
+```
 
 5. Intentar hacer ping a `Ubuntu1` desde `Ubuntu2`. ¿Funciona? ¿Por qué?.
 
@@ -428,8 +428,12 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' Ubu
 
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' Ubuntu2
 ```
+La IP de Ubuntu1 es: 172.17.0.2
 
-No funciona ya que `Ubuntu2` no está conectado a la red `redDocker`.
+La IP de Ubuntu2 es: 172.17.0.3
+
+
+No funciona ya que no está instalado los paquetes necesarios para hacer ping, y `Ubuntu2` no está conectado a la red `redDocker`. Insatalamos ping.
 
 6. Conectar `Ubuntu2` a la red `redDocker`.
 
